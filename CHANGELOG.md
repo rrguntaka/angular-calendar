@@ -2,6 +2,103 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.28.2](https://github.com/mattlewis92/angular-calendar/compare/v0.28.1...v0.28.2) (2019-11-21)
+
+
+### Bug Fixes
+
+* fix npm funding link ([5fc574a](https://github.com/mattlewis92/angular-calendar/commit/5fc574acc45eb8127c47344fb22430cf4fcd4e2b))
+
+### [0.28.1](https://github.com/mattlewis92/angular-calendar/compare/v0.28.0...v0.28.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* **schematics:** use correct date adapter when using moment ([2068e83](https://github.com/mattlewis92/angular-calendar/commit/2068e838c9ee80b0be85a476d268f3d1240cd0cc)), closes [#1133](https://github.com/mattlewis92/angular-calendar/issues/1133)
+
+## [0.28.0](https://github.com/mattlewis92/angular-calendar/compare/v0.27.21...v0.28.0) (2019-11-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* date-fns v2 or higher is now required as a peer dependency
+
+If implementing a custom adapter, the `max` function signature has changed to accept an array of dates, instead of an infinite argument list.
+
+The date adapters no longer accept strings as input arguments.
+
+* **week-view:** If extending the root week view component to override the template you must make the following changes:
+
+* Wrap the time events with `<div "class='cal-events-container'">`
+* Change `<div class="cal-time-label-column" *ngIf="view.hourColumns.length > 0">` to `<div class="cal-time-label-column" *ngIf="view.hourColumns.length > 0 && daysInWeek !== 1">`
+* Add `[isTimeLabel]="daysInWeek === 1"` to the bottom `<mwl-calendar-week-view-hour-segment>` elements
+* The trackBy function `trackByDayOrWeekEvent` was split into `trackByWeekAllDayEvent` and `trackByWeekTimeEvent`
+
+* **week-view:** if using a custom `headerTemplate` on the week view, then you must now add `let-dragEnter="dragEnter"` to the templates variables and `(dragEnter)="dragEnter.emit({ date: day.date })"` onto the `mwlDroppable` element.
+* the `columnHeaderClicked` output on the month view now exposes an object instead of just the ISO day number
+
+Before:
+```
+columnHeaderClicked="columnHeaderClicked($event)"
+```
+
+After:
+```
+columnHeaderClicked="columnHeaderClicked($event.isoDayNumber)"
+```
+* **day-view:** The day and week view have now merged. For most users this should be a seamless migration, however there are some edge cases that you may need to take account for:
+
+Any custom styles you used for the day view will need to be adjusted. The `cal-day-view-theme` sass mixin is now gone as all the styles are shared between the week and day view.
+
+The `eventWidth` option is removed, events now fill the available width.
+
+If using `[daysInWeek]="1"` on the week view, the date and title formatters for the day view will be used instead.
+
+The week view now has a border top applied to the top of the component container, rather than the top of the day headers container.
+
+The `getDayView` and `getDayViewHourGrid` functions have been removed from the `CalendarUtils` service.
+
+The following interfaces from `calendar-utils` were renamed: `DayViewHourSegment` -> `WeekViewHourSegment`, `DayViewHour` -> `WeekViewHour`, `DayViewEvent` -> `WeekViewTimeEvent`
+
+The day view scheduler demo is now based off the week view instead, please check the updated demo code for how to migrate: https://mattlewis92.github.io/angular-calendar/#/day-view-scheduler
+
+If using a custom template for the `hourSegmentTemplate`, you must pass `let-isTimeLabel="isTimeLabel"` as a local variable and then change `<div class="cal-time">` to `<div class="cal-time" *ngIf="isTimeLabel">`
+* the dist files are no longer annotated for usage with closure compiler.
+
+### Bug Fixes
+
+* ensure compatibility with angular 9 and ivy ([d4fdfb3](https://github.com/mattlewis92/angular-calendar/commit/d4fdfb3)), closes [#1086](https://github.com/mattlewis92/angular-calendar/issues/1086)
+* **day-view:** expand hour segments across the full calendar width ([61aef47](https://github.com/mattlewis92/angular-calendar/commit/61aef47)), closes [#1083](https://github.com/mattlewis92/angular-calendar/issues/1083)
+* **week-view:** prevent dropping external events on adjacent time slots ([494adb5](https://github.com/mattlewis92/angular-calendar/commit/494adb5)), closes [#1062](https://github.com/mattlewis92/angular-calendar/issues/1062)
+
+### Features
+
+* upgrade date-fns to v2 ([d4d3873](https://github.com/mattlewis92/angular-calendar/commit/d4d3873)), closes [#1064](https://github.com/mattlewis92/angular-calendar/issues/1064)
+* add accessibility support ([05c9a9a](https://github.com/mattlewis92/angular-calendar/commit/05c9a9a)), closes [#941](https://github.com/mattlewis92/angular-calendar/issues/941)
+* **schematics:** support ng add schematics ([2dc2f47](https://github.com/mattlewis92/angular-calendar/commit/2dc2f47)), closes [#888](https://github.com/mattlewis92/angular-calendar/issues/888)
+* **week-view:** add current time marker ([d3872b1](https://github.com/mattlewis92/angular-calendar/commit/d3872b1)), closes [#1102](https://github.com/mattlewis92/angular-calendar/issues/1102)
+* expose the click or keyboard event that triggers click handlers ([d1a2b78](https://github.com/mattlewis92/angular-calendar/commit/d1a2b78)), closes [#962](https://github.com/mattlewis92/angular-calendar/issues/962)
+* **day-view:** merge the week and day view components ([2e92b25](https://github.com/mattlewis92/angular-calendar/commit/2e92b25)), closes [#889](https://github.com/mattlewis92/angular-calendar/issues/889)
+* **day-view:** expose `allDayEventsLabelTemplate` input ([224848c](https://github.com/mattlewis92/angular-calendar/commit/224848c))
+
+### [0.27.21](https://github.com/mattlewis92/angular-calendar/compare/v0.27.20...v0.27.21) (2019-11-14)
+
+* add npm funding link
+
+### [0.27.20](https://github.com/mattlewis92/angular-calendar/compare/v0.27.19...v0.27.20) (2019-10-19)
+
+
+### Bug Fixes
+
+* always use native click event rather than hammerjs's tap event ([ca189c3](https://github.com/mattlewis92/angular-calendar/commit/ca189c3)), closes [#1113](https://github.com/mattlewis92/angular-calendar/issues/1113)
+
+### [0.27.19](https://github.com/mattlewis92/angular-calendar/compare/v0.27.18...v0.27.19) (2019-09-25)
+
+
+### Bug Fixes
+
+* restore peer dependencies ([1c0f6eb](https://github.com/mattlewis92/angular-calendar/commit/1c0f6eb))
+
 ### [0.27.18](https://github.com/mattlewis92/angular-calendar/compare/v0.27.17...v0.27.18) (2019-08-18)
 
 

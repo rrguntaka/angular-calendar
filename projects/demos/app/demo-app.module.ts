@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import {
-  BrowserModule,
-  HAMMER_GESTURE_CONFIG
-} from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   NgbTabsetModule,
@@ -17,7 +14,6 @@ import { DemoAppComponent } from './demo-app.component';
 import { DemoComponent as DefaultDemoComponent } from './demo-modules/kitchen-sink/component';
 import { DemoModule as DefaultDemoModule } from './demo-modules/kitchen-sink/module';
 import { environment } from '../environments/environment';
-import { CustomHammerConfig } from './hammer-config';
 import { FormsModule } from '@angular/forms';
 import { ClipboardModule } from 'ngx-clipboard';
 
@@ -307,13 +303,13 @@ import { ClipboardModule } from 'ngx-clipboard';
           }
         },
         {
-          path: 'group-month-view-events',
+          path: 'group-similar-events',
           loadChildren: () =>
-            import('./demo-modules/group-month-view-events/module').then(
+            import('./demo-modules/group-similar-events/module').then(
               m => m.DemoModule
             ),
           data: {
-            label: 'Group month view events'
+            label: 'Group similar events'
           }
         },
         {
@@ -396,12 +392,42 @@ import { ClipboardModule } from 'ngx-clipboard';
           }
         },
         {
+          path: 'responsive-week-view',
+          loadChildren: () =>
+            import('./demo-modules/responsive-week-view/module').then(
+              m => m.DemoModule
+            ),
+          data: {
+            label: 'Responsive week view'
+          }
+        },
+        {
           path: 'dark-theme',
           loadChildren: () =>
             import('./demo-modules/dark-theme/module').then(m => m.DemoModule),
           data: {
             label: 'Dark theme',
             darkTheme: true
+          }
+        },
+        {
+          path: 'week-view-event-margin',
+          loadChildren: () =>
+            import('./demo-modules/week-view-event-margin/module').then(
+              m => m.DemoModule
+            ),
+          data: {
+            label: 'Week view event margin'
+          }
+        },
+        {
+          path: 'customise-current-time-marker',
+          loadChildren: () =>
+            import('./demo-modules/customise-current-time-marker/module').then(
+              m => m.DemoModule
+            ),
+          data: {
+            label: 'Customise current time marker'
           }
         },
         {
@@ -413,12 +439,6 @@ import { ClipboardModule } from 'ngx-clipboard';
         useHash: true
       }
     )
-  ],
-  providers: [
-    {
-      provide: HAMMER_GESTURE_CONFIG,
-      useClass: CustomHammerConfig
-    }
   ],
   bootstrap: [DemoAppComponent]
 })

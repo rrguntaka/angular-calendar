@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   ViewEncapsulation
 } from '@angular/core';
-import { CalendarEvent, DAYS_OF_WEEK } from 'angular-calendar';
+import { CalendarEvent, CalendarView, DAYS_OF_WEEK } from 'angular-calendar';
 import { colors } from '../demo-utils/colors';
 
 @Component({
@@ -13,7 +13,7 @@ import { colors } from '../demo-utils/colors';
   templateUrl: 'template.html'
 })
 export class DemoComponent {
-  view: string = 'month';
+  view: CalendarView = CalendarView.Month;
 
   viewDate: Date = new Date('2016-01-05');
 
@@ -37,4 +37,6 @@ export class DemoComponent {
   excludeDays: number[] = [0, 6];
 
   weekStartsOn = DAYS_OF_WEEK.SUNDAY;
+
+  CalendarView = CalendarView;
 }
