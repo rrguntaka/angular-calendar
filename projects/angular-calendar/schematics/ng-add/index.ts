@@ -3,18 +3,18 @@ import {
   Rule,
   SchematicContext,
   Tree,
-  chain
+  chain,
 } from '@angular-devkit/schematics';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
-import { getWorkspace } from '@schematics/angular/utility/config';
 import { getAppModulePath } from '@schematics/angular/utility/ng-ast-utils';
 import { insertImport } from '@schematics/angular/utility/ast-utils';
 import { InsertChange } from '@schematics/angular/utility/change';
 import {
   addPackageJsonDependency,
   NodeDependency,
-  NodeDependencyType
+  NodeDependencyType,
 } from '@schematics/angular/utility/dependencies';
+import { normalize } from '@angular-devkit/core';
 
 import {
   addModuleImportToRootModule,
@@ -23,22 +23,23 @@ import {
   getProjectMainFile,
   getProjectFromWorkspace,
   insertWildcardImport,
-  insertAfterImports
+  insertAfterImports,
+  getWorkspace,
 } from '../utils';
 
 import { Schema } from './schema';
 import {
   dateFnsVersion,
   momentVersion,
-  angularCalendarVersion
+  angularCalendarVersion,
 } from './version-names';
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return chain([
     addPackageJsonDependencies(options),
     installPackageJsonDependencies(),
     addModuleToImports(options),
-    addAngularCalendarStyle(options)
+    addAngularCalendarStyle(options),
   ]);
 }
 
@@ -55,7 +56,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const dateAdapters: { [key: string]: string } = {
       moment: momentVersion,
-      'date-fns': dateFnsVersion
+      'date-fns': dateFnsVersion,
     };
 
     const angularCalendarDependency: NodeDependency = nodeDependencyFactory(
@@ -92,7 +93,7 @@ function nodeDependencyFactory(
     type: NodeDependencyType.Default,
     name: packageName,
     version,
-    overwrite: true
+    overwrite: true,
   };
 }
 
@@ -101,16 +102,12 @@ function addModuleToImports(options: Schema): Rule {
     context.logger.log('info', `Add modules imports options...`);
 
     const workspace = getWorkspace(host);
-    const project = getProjectFromWorkspace(
-      workspace,
-      options.projectName
-        ? options.projectName
-        : Object.keys(workspace['projects'])[0]
-    );
+    const project = getProjectFromWorkspace(workspace, options.projectName);
     const mainPath = getProjectMainFile(project);
     const appModulePath = options.module
-      ? options.module
+      ? normalize(project.root + '/' + options.module)
       : getAppModulePath(host, mainPath);
+
     const moduleName = `CalendarModule.forRoot({ provide: DateAdapter, useFactory: ${
       options.dateAdapter === 'moment'
         ? 'momentAdapterFactory'
@@ -134,7 +131,7 @@ function addModuleToImports(options: Schema): Rule {
         appModulePath,
         'adapterFactory',
         `${moduleCalendarSrc}/date-adapters/${options.dateAdapter}`
-      ) as InsertChange
+      ) as InsertChange,
     ];
 
     if (options.dateAdapter === 'moment') {
@@ -158,7 +155,7 @@ function addModuleToImports(options: Schema): Rule {
     }
 
     const recorder = host.beginUpdate(appModulePath);
-    updates.forEach(update => {
+    updates.forEach((update) => {
       recorder.insertLeft(update.pos, update.toAdd);
     });
     host.commitUpdate(recorder);

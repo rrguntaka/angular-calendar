@@ -3,7 +3,7 @@ import {
   Input,
   Output,
   EventEmitter,
-  TemplateRef
+  TemplateRef,
 } from '@angular/core';
 import { CalendarEvent } from 'calendar-utils';
 import { Subject } from 'rxjs';
@@ -11,7 +11,8 @@ import { CalendarEventTimesChangedEvent } from '../common/calendar-event-times-c
 import { PlacementArray } from 'positioning';
 import { CalendarWeekViewBeforeRenderEvent } from '../week/calendar-week.module';
 
-export type CalendarDayViewBeforeRenderEvent = CalendarWeekViewBeforeRenderEvent;
+export type CalendarDayViewBeforeRenderEvent =
+  CalendarWeekViewBeforeRenderEvent;
 
 /**
  * Shows all events on a given day. Example usage:
@@ -56,7 +57,7 @@ export type CalendarDayViewBeforeRenderEvent = CalendarWeekViewBeforeRenderEvent
       (eventTimesChanged)="eventTimesChanged.emit($event)"
       (beforeViewRender)="beforeViewRender.emit($event)"
     ></mwl-calendar-week-view>
-  `
+  `,
 })
 export class CalendarDayViewComponent {
   /**
@@ -71,7 +72,7 @@ export class CalendarDayViewComponent {
   @Input() events: CalendarEvent[] = [];
 
   /**
-   * The number of segments in an hour. Must be <= 6
+   * The number of segments in an hour. Must divide equally into 60.
    */
   @Input() hourSegments: number = 2;
 
@@ -176,6 +177,7 @@ export class CalendarDayViewComponent {
    */
   @Output() eventClicked = new EventEmitter<{
     event: CalendarEvent;
+    sourceEvent: MouseEvent | any;
   }>();
 
   /**
@@ -183,20 +185,19 @@ export class CalendarDayViewComponent {
    */
   @Output() hourSegmentClicked = new EventEmitter<{
     date: Date;
+    sourceEvent: MouseEvent;
   }>();
 
   /**
    * Called when an event is resized or dragged and dropped
    */
-  @Output() eventTimesChanged = new EventEmitter<
-    CalendarEventTimesChangedEvent
-  >();
+  @Output() eventTimesChanged =
+    new EventEmitter<CalendarEventTimesChangedEvent>();
 
   /**
    * An output that will be called before the view is rendered for the current day.
    * If you add the `cssClass` property to an hour grid segment it will add that class to the hour segment in the template
    */
-  @Output() beforeViewRender = new EventEmitter<
-    CalendarDayViewBeforeRenderEvent
-  >();
+  @Output() beforeViewRender =
+    new EventEmitter<CalendarDayViewBeforeRenderEvent>();
 }

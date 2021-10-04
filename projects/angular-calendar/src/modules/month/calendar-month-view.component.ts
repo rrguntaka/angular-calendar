@@ -9,19 +9,19 @@ import {
   OnDestroy,
   LOCALE_ID,
   Inject,
-  TemplateRef
+  TemplateRef,
 } from '@angular/core';
 import {
   CalendarEvent,
   WeekDay,
   MonthView,
   MonthViewDay,
-  ViewPeriod
+  ViewPeriod,
 } from 'calendar-utils';
 import { Subject, Subscription } from 'rxjs';
 import {
   CalendarEventTimesChangedEvent,
-  CalendarEventTimesChangedEventType
+  CalendarEventTimesChangedEventType,
 } from '../common/calendar-event-times-changed-event.interface';
 import { CalendarUtils } from '../common/calendar-utils.provider';
 import { validateEvents } from '../common/util';
@@ -66,8 +66,9 @@ export interface CalendarMonthViewEventTimesChangedEvent<
         <div
           *ngFor="let rowIndex of view.rowOffsets; trackBy: trackByRowOffset"
         >
-          <div class="cal-cell-row">
+          <div role="row" class="cal-cell-row">
             <mwl-calendar-month-cell
+              role="gridcell"
               *ngFor="
                 let day of view.days
                   | slice: rowIndex:rowIndex + view.totalDaysVisibleInWeek;
@@ -137,10 +138,11 @@ export interface CalendarMonthViewEventTimesChangedEvent<
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class CalendarMonthViewComponent
-  implements OnChanges, OnInit, OnDestroy {
+  implements OnChanges, OnInit, OnDestroy
+{
   /**
    * The current view date
    */
@@ -199,7 +201,16 @@ export class CalendarMonthViewComponent
   @Input() tooltipDelay: number | null = null;
 
   /**
-   * The start number of the week
+   * The start number of the week.
+   * If using the moment date adapter this option won't do anything and you'll need to set it globally like so:
+   * ```
+   * moment.updateLocale('en', {
+   *   week: {
+   *     dow: 1, // set start of week to monday instead
+   *     doy: 0,
+   *   },
+   * });
+   * ```
    */
   @Input() weekStartsOn: number;
 
@@ -237,25 +248,23 @@ export class CalendarMonthViewComponent
    * An output that will be called before the view is rendered for the current month.
    * If you add the `cssClass` property to a day in the body it will add that class to the cell element in the template
    */
-  @Output()
-  beforeViewRender = new EventEmitter<CalendarMonthViewBeforeRenderEvent>();
+  @Output() beforeViewRender =
+    new EventEmitter<CalendarMonthViewBeforeRenderEvent>();
 
   /**
    * Called when the day cell is clicked
    */
-  @Output()
-  dayClicked = new EventEmitter<{
+  @Output() dayClicked = new EventEmitter<{
     day: MonthViewDay;
-    sourceEvent: MouseEvent | KeyboardEvent;
+    sourceEvent: MouseEvent | any;
   }>();
 
   /**
    * Called when the event title is clicked
    */
-  @Output()
-  eventClicked = new EventEmitter<{
+  @Output() eventClicked = new EventEmitter<{
     event: CalendarEvent;
-    sourceEvent: MouseEvent | KeyboardEvent;
+    sourceEvent: MouseEvent | any;
   }>();
 
   /**
@@ -263,16 +272,14 @@ export class CalendarMonthViewComponent
    */
   @Output() columnHeaderClicked = new EventEmitter<{
     isoDayNumber: number;
-    sourceEvent: MouseEvent | KeyboardEvent;
+    sourceEvent: MouseEvent | any;
   }>();
 
   /**
    * Called when an event is dragged and dropped
    */
   @Output()
-  eventTimesChanged = new EventEmitter<
-    CalendarMonthViewEventTimesChangedEvent
-  >();
+  eventTimesChanged = new EventEmitter<CalendarMonthViewEventTimesChangedEvent>();
 
   /**
    * @hidden
@@ -302,20 +309,6 @@ export class CalendarMonthViewComponent
   /**
    * @hidden
    */
-  trackByRowOffset = (index: number, offset: number) =>
-    this.view.days
-      .slice(offset, this.view.totalDaysVisibleInWeek)
-      .map(day => day.date.toISOString())
-      .join('-');
-
-  /**
-   * @hidden
-   */
-  trackByDate = (index: number, day: MonthViewDay) => day.date.toISOString();
-
-  /**
-   * @hidden
-   */
   constructor(
     protected cdr: ChangeDetectorRef,
     protected utils: CalendarUtils,
@@ -324,6 +317,20 @@ export class CalendarMonthViewComponent
   ) {
     this.locale = locale;
   }
+
+  /**
+   * @hidden
+   */
+  trackByRowOffset = (index: number, offset: number) =>
+    this.view.days
+      .slice(offset, this.view.totalDaysVisibleInWeek)
+      .map((day) => day.date.toISOString())
+      .join('-');
+
+  /**
+   * @hidden
+   */
+  trackByDate = (index: number, day: MonthViewDay) => day.date.toISOString();
 
   /**
    * @hidden
@@ -389,7 +396,7 @@ export class CalendarMonthViewComponent
    * @hidden
    */
   toggleDayHighlight(event: CalendarEvent, isHighlighted: boolean): void {
-    this.view.days.forEach(day => {
+    this.view.days.forEach((day) => {
       if (isHighlighted && day.events.indexOf(event) > -1) {
         day.backgroundColor =
           (event.color && event.color.secondary) || '#D1E8FF';
@@ -431,7 +438,7 @@ export class CalendarMonthViewComponent
         newStart,
         newEnd,
         day: droppedOn,
-        type: CalendarEventTimesChangedEventType.Drop
+        type: CalendarEventTimesChangedEventType.Drop,
       });
     }
   }
@@ -441,7 +448,7 @@ export class CalendarMonthViewComponent
       viewDate: this.viewDate,
       weekStartsOn: this.weekStartsOn,
       excluded: this.excludeDays,
-      weekendDays: this.weekendDays
+      weekendDays: this.weekendDays,
     });
   }
 
@@ -451,14 +458,14 @@ export class CalendarMonthViewComponent
       viewDate: this.viewDate,
       weekStartsOn: this.weekStartsOn,
       excluded: this.excludeDays,
-      weekendDays: this.weekendDays
+      weekendDays: this.weekendDays,
     });
   }
 
   protected checkActiveDayIsOpen(): void {
     if (this.activeDayIsOpen === true) {
       const activeDay = this.activeDay || this.viewDate;
-      this.openDay = this.view.days.find(day =>
+      this.openDay = this.view.days.find((day) =>
         this.dateAdapter.isSameDay(day.date, activeDay)
       );
       const index: number = this.view.days.indexOf(this.openDay);
@@ -483,7 +490,7 @@ export class CalendarMonthViewComponent
       this.beforeViewRender.emit({
         header: this.columnHeaders,
         body: this.view.days,
-        period: this.view.period
+        period: this.view.period,
       });
     }
   }

@@ -6,7 +6,7 @@ import { CalendarModule, DateAdapter } from '../src';
 import { adapterFactory } from '../src/date-adapters/date-fns';
 
 @Component({
-  template: '<button mwlCalendarToday [(viewDate)]="viewDate">Next</button>'
+  template: '<button mwlCalendarToday [(viewDate)]="viewDate">Next</button>',
 })
 class TestComponent {
   public viewDate: Date;
@@ -18,17 +18,16 @@ describe('mwlCalendarNextView directive', () => {
       imports: [
         CalendarModule.forRoot({
           provide: DateAdapter,
-          useFactory: adapterFactory
-        })
+          useFactory: adapterFactory,
+        }),
       ],
-      declarations: [TestComponent]
+      declarations: [TestComponent],
     });
   });
 
   it('should set the view date to the start of today', () => {
-    const fixture: ComponentFixture<TestComponent> = TestBed.createComponent(
-      TestComponent
-    );
+    const fixture: ComponentFixture<TestComponent> =
+      TestBed.createComponent(TestComponent);
     fixture.componentInstance.viewDate = new Date('2017-01-28');
     fixture.detectChanges();
     fixture.nativeElement.querySelector('button').click();

@@ -1,14 +1,15 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   CalendarEvent,
   CalendarMonthViewDay,
-  CalendarView
+  CalendarView,
+  CalendarWeekViewBeforeRenderEvent,
 } from 'angular-calendar';
-import { WeekViewHour } from 'calendar-utils';
+import { WeekViewHour, WeekViewHourColumn } from 'calendar-utils';
 
 @Component({
   selector: 'mwl-demo-component',
@@ -21,9 +22,9 @@ import { WeekViewHour } from 'calendar-utils';
       .cal-day-selected:hover {
         background-color: deeppink !important;
       }
-    `
+    `,
   ],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class DemoComponent {
   view: CalendarView = CalendarView.Month;
@@ -34,7 +35,7 @@ export class DemoComponent {
 
   selectedDayViewDate: Date;
 
-  dayView: WeekViewHour[];
+  hourColumns: WeekViewHourColumn[];
 
   events: CalendarEvent[] = [];
 
@@ -44,7 +45,7 @@ export class DemoComponent {
     this.selectedMonthViewDay = day;
     const selectedDateTime = this.selectedMonthViewDay.date.getTime();
     const dateIndex = this.selectedDays.findIndex(
-      selectedDay => selectedDay.date.getTime() === selectedDateTime
+      (selectedDay) => selectedDay.date.getTime() === selectedDateTime
     );
     if (dateIndex > -1) {
       delete this.selectedMonthViewDay.cssClass;
@@ -57,10 +58,10 @@ export class DemoComponent {
   }
 
   beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
-    body.forEach(day => {
+    body.forEach((day) => {
       if (
         this.selectedDays.some(
-          selectedDay => selectedDay.date.getTime() === day.date.getTime()
+          (selectedDay) => selectedDay.date.getTime() === day.date.getTime()
         )
       ) {
         day.cssClass = 'cal-day-selected';
@@ -73,21 +74,23 @@ export class DemoComponent {
     this.addSelectedDayViewClass();
   }
 
-  beforeDayViewRender(dayView: WeekViewHour[]) {
-    this.dayView = dayView;
+  beforeWeekOrDayViewRender(event: CalendarWeekViewBeforeRenderEvent) {
+    this.hourColumns = event.hourColumns;
     this.addSelectedDayViewClass();
   }
 
   private addSelectedDayViewClass() {
-    this.dayView.forEach(hourSegment => {
-      hourSegment.segments.forEach(segment => {
-        delete segment.cssClass;
-        if (
-          this.selectedDayViewDate &&
-          segment.date.getTime() === this.selectedDayViewDate.getTime()
-        ) {
-          segment.cssClass = 'cal-day-selected';
-        }
+    this.hourColumns.forEach((column) => {
+      column.hours.forEach((hourSegment) => {
+        hourSegment.segments.forEach((segment) => {
+          delete segment.cssClass;
+          if (
+            this.selectedDayViewDate &&
+            segment.date.getTime() === this.selectedDayViewDate.getTime()
+          ) {
+            segment.cssClass = 'cal-day-selected';
+          }
+        });
       });
     });
   }

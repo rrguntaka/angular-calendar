@@ -1,6 +1,6 @@
 import {
   CalendarDateFormatterInterface,
-  DateFormatterParams
+  DateFormatterParams,
 } from './calendar-date-formatter.interface';
 import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
@@ -12,7 +12,8 @@ import { getWeekViewPeriod } from './util';
  */
 @Injectable()
 export class CalendarAngularDateFormatter
-  implements CalendarDateFormatterInterface {
+  implements CalendarDateFormatterInterface
+{
   constructor(protected dateAdapter: DateAdapter) {}
 
   /**
@@ -48,7 +49,7 @@ export class CalendarAngularDateFormatter
    */
   public weekViewColumnSubHeader({
     date,
-    locale
+    locale,
   }: DateFormatterParams): string {
     return formatDate(date, 'MMM d', locale);
   }
@@ -61,7 +62,7 @@ export class CalendarAngularDateFormatter
     locale,
     weekStartsOn,
     excludeDays,
-    daysInWeek
+    daysInWeek,
   }: DateFormatterParams): string {
     const { viewStart, viewEnd } = getWeekViewPeriod(
       this.dateAdapter,

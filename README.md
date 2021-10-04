@@ -1,14 +1,29 @@
-# angular 6.0+ calendar
+<h1 align="center">angular 6.0+ calendar</h1>
+
+<div align="center">
 
 [![Sponsorship](https://img.shields.io/badge/funding-github-%23EA4AAA)](https://github.com/users/mattlewis92/sponsorship)
 [![Build Status](https://travis-ci.org/mattlewis92/angular-calendar.svg?branch=master)](https://travis-ci.org/mattlewis92/angular-calendar)
 [![codecov](https://codecov.io/gh/mattlewis92/angular-calendar/branch/master/graph/badge.svg)](https://codecov.io/gh/mattlewis92/angular-calendar)
 [![npm version](https://badge.fury.io/js/angular-calendar.svg)](http://badge.fury.io/js/angular-calendar)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/mattlewis92_.svg)](https://twitter.com/mattlewis92_)
 
-## Demo
+</div>
+
+<h2 align="center">Demo</h2>
+
+<div align="center">
 
 https://mattlewis92.github.io/angular-calendar/
+
+</div>
+
+<h2 align="center">Sponsors</h2>
+
+<div align="center">
+<a href="https://github.com/sponsors/mattlewis92">Become a silver or gold sponsor<a> and get your logo on this README on Github with a link to your site.
+</div>
 
 ## Table of contents
 
@@ -21,11 +36,11 @@ https://mattlewis92.github.io/angular-calendar/
 - [Development](#development)
 - [License](#license)
 
-## About
+<h2 align="center">About</h2>
 
 A calendar component for Angular 6.0+ that can display events on a month, week or day view. The successor of [angular-bootstrap-calendar](https://github.com/mattlewis92/angular-bootstrap-calendar).
 
-## Getting started
+<h2 align="center">Getting started</h2>
 
 ### ng add (recommended)
 
@@ -61,9 +76,9 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
     BrowserAnimationsModule,
     CalendarModule.forRoot({
       provide: DateAdapter,
-      useFactory: adapterFactory
-    })
-  ]
+      useFactory: adapterFactory,
+    }),
+  ],
 })
 export class MyModule {}
 ```
@@ -74,19 +89,21 @@ Once you are up and running, to access a full list of options for each component
 
 If you would like a one on one consultation with me where I can show you the best way to integrate and customise this calendar within your application, then you can get this by becoming a Platinum Sponsor on [GitHub](https://github.com/users/mattlewis92/sponsorship).
 
+> Please note: angular-calendar uses [Scarf](https://scarf.sh/) to collect anonymized installation analytics. These analytics help support the maintainers of this library. However, if you'd like to opt out, you can do so by setting `scarfSettings.enabled = false` in your project's package.json. Alternatively, you can set the environment variable `SCARF_ANALYTICS=false` before you install.
+
 ### Module bundlers
 
 You can find quick start examples for all common module bundlers in the [build-tool-examples](https://github.com/mattlewis92/angular-calendar/tree/master/build-tool-examples) folder.
 
-## Documentation
+<h2 align="center">Documentation</h2>
 
 To see all available API options, take a look at the auto generated [documentation](https://mattlewis92.github.io/angular-calendar/docs/). You may find it helpful to view the examples on the demo page.
 
-## Breaking changes
+<h2 align="center">Breaking changes</h2>
 
 Where possible this library will strictly adhere to [semver](http://semver.org/) and only introduce API breaking changes in 0.x releases or new major versions post 1.0. The only exception to this is if you are using custom templates or extending the base components to add additional functionality, whereby critical bug fixes may introduce breakages as the internal API changes.
 
-## FAQ
+<h2 align="center">FAQ</h2>
 
 ### Is this library AoT and universal compatible?
 
@@ -143,11 +160,15 @@ All browsers supported by angular, apart from IE9 as it doesn't support flexbox.
 
 No! While the demo site uses bootstrap, it isn't a requirement of this library. The styling is designed to adapt to whatever global styling your app has.
 
-## Angular 1 version
+<h2 align="center">Angular 1 version</h2>
+
+<div align="center">
 
 https://github.com/mattlewis92/angular-bootstrap-calendar
 
-## Development
+</div>
+
+<h2 align="center">Development</h2>
 
 ### Prepare your environment
 
@@ -169,7 +190,3 @@ Run `npm test` to run tests once or `npm run test:watch` to continually run test
 ```bash
 npm run release
 ```
-
-## License
-
-MIT

@@ -1,7 +1,92 @@
 <div class="cal-week-view" role="grid">
-  <div class="day-view-column-headers">
-    <div class="day-view-column-header" *ngFor="let user of view?.users">
-      {{ user.name }}
+  <div class="cal-day-headers" role="row">
+    <div
+      class="cal-header"
+      *ngFor="let user of users; trackBy: trackByUserId"
+      tabindex="0"
+      role="columnheader"
+    >
+      <b>{{ user.name }}</b>
+    </div>
+  </div>
+  <div
+    class="cal-all-day-events"
+    #allDayEventsContainer
+    *ngIf="view.allDayEventRows.length > 0"
+    mwlDroppable
+    (dragEnter)="dragEnter('allDay')"
+    (dragLeave)="dragLeave('allDay')"
+  >
+    <div class="cal-day-columns">
+      <div
+        class="cal-time-label-column"
+        [ngTemplateOutlet]="allDayEventsLabelTemplate"
+      ></div>
+      <div
+        class="cal-day-column"
+        *ngFor="let day of days; trackBy: trackByWeekDayHeaderDate"
+        mwlDroppable
+        dragOverClass="cal-drag-over"
+        (drop)="eventDropped($event, day.date, true)"
+        (dragEnter)="dateDragEnter(day.date)"
+      ></div>
+    </div>
+    <div
+      *ngFor="let eventRow of view.allDayEventRows; trackBy: trackById"
+      #eventRowContainer
+      class="cal-events-row"
+    >
+      <div
+        *ngFor="
+          let allDayEvent of eventRow.row;
+          trackBy: trackByWeekAllDayEvent
+        "
+        #event
+        class="cal-event-container"
+        [class.cal-draggable]="
+          allDayEvent.event.draggable && allDayEventResizes.size === 0
+        "
+        [class.cal-starts-within-week]="!allDayEvent.startsBeforeWeek"
+        [class.cal-ends-within-week]="!allDayEvent.endsAfterWeek"
+        [ngClass]="allDayEvent.event?.cssClass"
+        [style.width.%]="(100 / users.length) * allDayEvent.span"
+        [style.marginLeft.%]="(100 / users.length) * allDayEvent.offset"
+        mwlDraggable
+        dragActiveClass="cal-drag-active"
+        [dropData]="{ event: allDayEvent.event, calendarId: calendarId }"
+        [dragAxis]="{
+          x: allDayEvent.event.draggable && allDayEventResizes.size === 0,
+          y:
+            !snapDraggedEvents &&
+            allDayEvent.event.draggable &&
+            allDayEventResizes.size === 0
+        }"
+        [dragSnapGrid]="snapDraggedEvents ? { x: dayColumnWidth } : {}"
+        [validateDrag]="validateDrag"
+        (dragStart)="dragStarted(eventRowContainer, event)"
+        (dragging)="allDayEventDragMove()"
+        (dragEnd)="dragEnded(allDayEvent, $event, dayColumnWidth)"
+      >
+        <mwl-calendar-week-view-event
+          [locale]="locale"
+          [weekEvent]="allDayEvent"
+          [tooltipPlacement]="tooltipPlacement"
+          [tooltipTemplate]="tooltipTemplate"
+          [tooltipAppendToBody]="tooltipAppendToBody"
+          [tooltipDelay]="tooltipDelay"
+          [customTemplate]="eventTemplate"
+          [eventTitleTemplate]="eventTitleTemplate"
+          [eventActionsTemplate]="eventActionsTemplate"
+          [daysInWeek]="daysInWeek"
+          (eventClicked)="
+            eventClicked.emit({
+              event: allDayEvent.event,
+              sourceEvent: $event.sourceEvent
+            })
+          "
+        >
+        </mwl-calendar-week-view-event>
+      </div>
     </div>
   </div>
   <div
@@ -41,6 +126,16 @@
         class="cal-day-column"
         *ngFor="let column of view.hourColumns; trackBy: trackByHourColumn"
       >
+        <mwl-calendar-week-view-current-time-marker
+          [columnDate]="column.date"
+          [dayStartHour]="dayStartHour"
+          [dayStartMinute]="dayStartMinute"
+          [dayEndHour]="dayEndHour"
+          [dayEndMinute]="dayEndMinute"
+          [hourSegments]="hourSegments"
+          [hourSegmentHeight]="hourSegmentHeight"
+          [customTemplate]="currentTimeMarkerTemplate"
+        ></mwl-calendar-week-view-current-time-marker>
         <div
           *ngFor="let timeEvent of column.events; trackBy: trackByWeekTimeEvent"
           #event
@@ -54,8 +149,8 @@
           [hidden]="timeEvent.height === 0 && timeEvent.width === 0"
           [style.top.px]="timeEvent.top"
           [style.height.px]="timeEvent.height"
-          [style.left.px]="timeEvent.left"
-          [style.width.px]="timeEvent.width"
+          [style.left.%]="timeEvent.left"
+          [style.width.%]="timeEvent.width"
           mwlResizable
           [resizeSnapGrid]="{
             left: dayColumnWidth,
@@ -77,7 +172,7 @@
           }"
           [dragSnapGrid]="
             snapDraggedEvents
-              ? { x: eventWidth, y: eventSnapSize || hourSegmentHeight }
+              ? { x: dayColumnWidth, y: eventSnapSize || hourSegmentHeight }
               : {}
           "
           [ghostDragEnabled]="!snapDraggedEvents"

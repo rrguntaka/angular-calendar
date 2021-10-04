@@ -1,12 +1,13 @@
 import {
   Component,
   Input,
+  NgZone,
   OnChanges,
   SimpleChanges,
-  TemplateRef
+  TemplateRef,
 } from '@angular/core';
 import { BehaviorSubject, interval, Observable } from 'rxjs';
-import { switchMapTo, startWith, map } from 'rxjs/operators';
+import { switchMapTo, startWith, map, switchMap } from 'rxjs/operators';
 import { DateAdapter } from '../../date-adapters/date-adapter';
 
 @Component({
@@ -41,7 +42,7 @@ import { DateAdapter } from '../../date-adapters/date-adapter';
       }"
     >
     </ng-template>
-  `
+  `,
 })
 export class CalendarWeekViewCurrentTimeMarkerComponent implements OnChanges {
   @Input() columnDate: Date;
@@ -60,14 +61,16 @@ export class CalendarWeekViewCurrentTimeMarkerComponent implements OnChanges {
 
   @Input() customTemplate: TemplateRef<any>;
 
-  private columnDate$ = new BehaviorSubject<Date>(this.columnDate);
+  columnDate$ = new BehaviorSubject<Date>(this.columnDate);
 
-  marker$: Observable<{ isVisible: boolean; top: number }> = interval(
-    60 * 1000
-  ).pipe(
+  marker$: Observable<{
+    isVisible: boolean;
+    top: number;
+  }> = this.zone.onStable.pipe(
+    switchMap(() => interval(60 * 1000)),
     startWith(0),
     switchMapTo(this.columnDate$),
-    map(columnDate => {
+    map((columnDate) => {
       const startOfDay = this.dateAdapter.setMinutes(
         this.dateAdapter.setHours(columnDate, this.dayStartHour),
         this.dayStartMinute
@@ -86,12 +89,12 @@ export class CalendarWeekViewCurrentTimeMarkerComponent implements OnChanges {
           now <= endOfDay,
         top:
           this.dateAdapter.differenceInMinutes(now, startOfDay) *
-          hourHeightModifier
+          hourHeightModifier,
       };
     })
   );
 
-  constructor(private dateAdapter: DateAdapter) {}
+  constructor(private dateAdapter: DateAdapter, private zone: NgZone) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.columnDate) {
